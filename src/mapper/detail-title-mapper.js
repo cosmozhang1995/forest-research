@@ -6,5 +6,6 @@ module.exports = {
 	areaBreast: '胸高断面积',
 	lengthCrown: '长',
 	widthCrown: '宽',
-	areaCrown: '冠幅'
+	areaCrown: '冠幅',
+	height: '高度'
 };

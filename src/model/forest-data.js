@@ -172,13 +172,9 @@ ForestData.fromFile = function(filename) {
 		for (var i = 0; i < raw_data.length; i++) {
 			var data_row = raw_data[i];
 			var validCountInRow = util.xlsxHelper.validCountInRow(data_row);
-			if (validCountInRow == 1) {
-				data_row.forEach(function(item) {
-					if (item !== undefined) {
-						current_sample_area = item;
-						return false;
-					}
-				});
+			var sampleAreaFromThisRow = ForestData.getSampleAreaFromRow(data_row);
+			if (sampleAreaFromThisRow) {
+				current_sample_area = sampleAreaFromThisRow;
 			} else {
 				try {
 					var record = ForestRecord.fromRow(headerRow, data_row);
@@ -230,6 +226,18 @@ ForestData.isHeaderRow = function(data_row) {
 	});
 	if (hasSpeciesHeader && hasCountHeader) return true;
 	else return false;
+}
+
+ForestData.getSampleAreaFromRow = function(data_row) {
+	var ret = undefined;
+	for (var i = data_row.length - 1; i >= 0; i--) {
+		var _item = data_row[i];
+		if (typeof _item !== "string") continue;
+		if (/.*[^0-9a-zA-Z].*/.test(_item)) return undefined;
+		if (ret) return undefined;
+		else ret = _item;
+	};
+	return ret;
 }
 
 ForestData.getHeaderRow = function(data) {
