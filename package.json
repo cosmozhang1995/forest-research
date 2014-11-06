@@ -8,11 +8,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/mgcrea/node-xlsx.git"
+		"url": "https://github.com/cosmozhang1995/forest-research.git"
 	},
 	"dependencies": {
 		"node-xlsx": "0.5.1"
 	},
-	"author": "cosmozhang1995",
+	"author": {
+    "name": "Cosmo Zhang",
+    "email": "cosmozhang1995@gmail.com"
+  },
 	"license": "ISC"
 }
