@@ -189,6 +189,7 @@ var ForestData = function(opts) {
 			sFigure += item.pi2;
 			diversity += 1;
 		});
+		sFigure = 1 - sFigure;
 		lns = Math.log(diversity);
 		jsw = swFigureTotal / lns;
 		return {
@@ -336,6 +337,8 @@ ForestData.getTypes = function(data) {
 		}
 	}
 	types.title = isRowTitle ? 'row-title' : 'col-title';
+
+	types.category = "tree";
 
 	return types;
 }
