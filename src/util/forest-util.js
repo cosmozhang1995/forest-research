@@ -22,6 +22,7 @@ var ForestUtil = {
 	sampleSummaryTableTitleMapper: require('../mapper/sample-summary-title-mapper'),
 	speciesSummaryTableTitleMapper: require('../mapper/species-summary-title-mapper'),
 	sampleSpeciesSummaryTableTitleMapper: require('../mapper/sample-species-summary-title-mapper'),
+	summaryTableTitleMapper: require('../mapper/summary-title-mapper'),
 
 	arrayHelper: {
 		contain: function(_arr, _val) {

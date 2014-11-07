@@ -2,7 +2,11 @@ var util = require('../util/forest-util');
 var ForestRecord = require('./forest-record');
 
 var ForestData = function(opts) {
-	this.types = [];						// [row-title | col-title]
+	this.types = {
+		title: "row-title",				// row-title | col-title
+		category: "tree"					// tree | shrub | herb
+	};						
+	this.name = "";
 	if (opts && (opts.records instanceof Array)) this.records = opts.records;
 	else this.records = [];
 
@@ -121,6 +125,104 @@ var ForestData = function(opts) {
 		return data;
 	};
 
+	this.getSummary = function() {
+		var records = this.get('records');
+		var data = [];
+		var _this = this;
+		records.forEach(function(item){
+			var exist_data = util.arrayHelper.findProperty(data, 'species', item.species);
+			if (exist_data) {
+				if (!util.arrayHelper.contain(exist_data.sampleAreas, item.sampleArea)) {
+					exist_data.sampleAreas.push(item.sampleArea);
+					exist_data.sampleAreaCount++;
+				}
+				exist_data.count += item.count;
+				exist_data.diameterBreast += item.get('diameterBreast');
+				exist_data.areaBreast += item.get('areaBreast');
+				exist_data.lengthCrown += item.get('lengthCrown');
+				exist_data.widthCrown += item.get('widthCrown');
+				exist_data.areaCrown += item.get('areaCrown');
+			} else {
+				data.push({
+					species: item.species,
+					count: item.count,
+					sampleAreas: [item.sampleArea],
+					sampleAreaCount: 1,
+					diameterBreast: item.get('diameterBreast'),
+					areaBreast: item.get('areaBreast'),
+					lengthCrown: item.get('lengthCrown'),
+					widthCrown: item.get('widthCrown'),
+					areaCrown: item.get('areaCrown')
+				});
+			}
+		});
+		var countTotal = 0,
+				sampleAreaCountTotal = 0,
+				areaBreastTotal = 0,
+				areaCrownTotal = 0,
+				swFigureTotal = 0,
+				sFigure = 0,
+				diversity = 0,
+				lns = 0,
+				jsw = 0;
+		data.forEach(function(item) {
+			countTotal += item.count;
+			sampleAreaCountTotal += item.sampleAreaCount;
+			areaBreastTotal += item.areaBreast;
+			areaCrownTotal += item.areaCrown;
+		});
+		data.forEach(function(item) {
+			item.density = item.count / countTotal;
+			item.frequence = item.sampleAreaCount / sampleAreaCountTotal;
+			item.advantage = (_this.types.category == "tree") ?
+				item.areaBreast / areaBreastTotal :
+				item.areaCrown / areaCrownTotal;
+			item.importance = (item.density + item.frequence + item.advantage) / 3;
+			item.pi = item.density;
+			item.lnpi = Math.log(item.pi);
+			item.pimlnpi = item.pi * item.lnpi;
+			item.swFigure = -1 * item.pimlnpi;
+			item.pi2 = item.pi * item.pi;
+		});
+		data.forEach(function(item) {
+			swFigureTotal += item.swFigure;
+			sFigure += item.pi2;
+			diversity += 1;
+		});
+		lns = Math.log(diversity);
+		jsw = swFigureTotal / lns;
+		return {
+			countTotal: countTotal,
+			sampleAreaCountTotal: sampleAreaCountTotal,
+			areaBreastTotal: areaBreastTotal,
+			areaCrownTotal: areaCrownTotal,
+			swFigureTotal: swFigureTotal,
+			sFigure: sFigure,
+			diversity: diversity,
+			lns: lns,
+			jsw: jsw,
+			data: data
+		};
+	};
+
+	this.getSummaryForTable = function() {
+		var summaryData = this.getSummary();
+		var data = summaryData.data;
+		var data0 = data[0];
+		if (data0) {
+			data0.countTotal = summaryData.countTotal;
+			data0.sampleAreaCountTotal = summaryData.sampleAreaCountTotal;
+			data0.areaBreastTotal = summaryData.areaBreastTotal;
+			data0.areaCrownTotal = summaryData.areaCrownTotal;
+			data0.swFigureTotal = summaryData.swFigureTotal;
+			data0.sFigure = summaryData.sFigure;
+			data0.diversity = summaryData.diversity;
+			data0.lns = summaryData.lns;
+			data0.jsw = summaryData.jsw;
+		}
+		return data;
+	};
+
 	this.getDetailTable = function(fields, titleMapper) {
 		if (!fields) fields = ['sampleArea', 'species', 'count', 'diameterBreast', 'areaBreast', 'lengthCrown', 'widthCrown', 'areaCrown'];
 		if (!titleMapper) titleMapper = util.detailTableTitleMapper;
@@ -145,6 +247,13 @@ var ForestData = function(opts) {
 		var records = this.getSampleSpeciesSummary();
 		return util.xlsxHelper.dataArray(fields, titleMapper, records);
 	};
+	this.getSummaryTable = function(fields, titleMapper) {
+		var areaField = (this.types.category == "tree") ? 'areaBreast' : 'areaCrown';
+		if (!fields) fields = ['species', 'sampleAreaCount', 'sampleAreaCountTotal', 'count', 'countTotal', areaField, areaField+'Total', 'density', 'frequence', 'advantage', 'importance', 'pi', 'lnpi', 'pimlnpi', 'swFigure', 'swFigureTotal', 'pi2', 'sFigure', 'diversity', 'lns', 'jsw'];
+		if (!titleMapper) titleMapper = util.summaryTableTitleMapper;
+		var records = this.getSummaryForTable();
+		return util.xlsxHelper.dataArray(fields, titleMapper, records);
+	};
 
 	this.putFile = function(filename, types) {
 		var data = [];
@@ -161,8 +270,24 @@ var ForestData = function(opts) {
 };
 
 ForestData.fromFile = function(filename) {
-	var raw_data = util.xlsx.parse(filename)[0].data;
+	var parsedData = util.xlsx.parse(filename);
+	var forestDatas = [];
+	parsedData.forEach(function(item) {
+		var forestData = undefined;
+		try {
+			forestData = ForestData.fromDataset(item);
+		} catch (e) {
+			forestData = undefined;
+		}
+		if (forestData) forestDatas.push(forestData);
+	});
+	return forestDatas;
+};
+
+ForestData.fromDataset = function(dataset) {
+	var raw_data = dataset.data;
 	var data = new ForestData();
+	data.name = dataset.name;
 	data.types = ForestData.getTypes(raw_data);
 
 	var standardCols = ForestData.standardCols(raw_data);
@@ -194,9 +319,7 @@ ForestData.fromFile = function(filename) {
 				if (record instanceof ForestRecord) {
 					data.records.push(record);
 				}
-			} catch (e) {
-				console.log(e);
-			}
+			} catch (e) {}
 		}
 	}
 	return data;

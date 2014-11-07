@@ -24,6 +24,7 @@ ForestRecord.fromRow = function(header, data_row) {
 	for (var i = 0; i < header.length; i++) {
 		var title = util.parseRecordProperty(header[i]);
 		var parser = ForestRecord.propertyParsers[title];
+		console.log(title, parser);
 		if (typeof parser !== "function") continue;
 		var val;
 		try {
@@ -33,6 +34,8 @@ ForestRecord.fromRow = function(header, data_row) {
 			if ('' + e != "Cannot set this property") throw e;
 		}
 	}
+	console.log('\n=========================\n');
+	// console.log(header, data_row, opts);
 	return new ForestRecord(opts);
 }
 
