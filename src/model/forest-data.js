@@ -9,6 +9,7 @@ var ForestData = function(opts) {
 	this.name = "";
 	if (opts && (opts.records instanceof Array)) this.records = opts.records;
 	else this.records = [];
+	if (opts && opts.category) this.types.category = opts.category;
 
 	this.getSpeciesSummary = function() {
 		var records = this.get('records');
@@ -270,13 +271,13 @@ var ForestData = function(opts) {
 	};
 };
 
-ForestData.fromFile = function(filename) {
+ForestData.fromFile = function(filename, opts) {
 	var parsedData = util.xlsx.parse(filename);
 	var forestDatas = [];
 	parsedData.forEach(function(item) {
 		var forestData = undefined;
 		try {
-			forestData = ForestData.fromDataset(item);
+			forestData = ForestData.fromDataset(item, opts);
 		} catch (e) {
 			forestData = undefined;
 		}
@@ -285,11 +286,11 @@ ForestData.fromFile = function(filename) {
 	return forestDatas;
 };
 
-ForestData.fromDataset = function(dataset) {
+ForestData.fromDataset = function(dataset, opts) {
 	var raw_data = dataset.data;
-	var data = new ForestData();
+	var data = new ForestData(opts);
 	data.name = dataset.name;
-	data.types = ForestData.getTypes(raw_data);
+	data.types.title = ForestData.getTitleType(raw_data);
 
 	var standardCols = ForestData.standardCols(raw_data);
 	var headerRow = ForestData.getHeaderRow(raw_data);
@@ -312,9 +313,19 @@ ForestData.fromDataset = function(dataset) {
 			}
 		}
 	} else {
+		var current_sample_area = "";
+		var sample_area_idx = 0;
+		for (var i = 0; i < headerRow.length; i++) {
+			if (util.recordPropertyMapper.sampleArea.test(headerRow[i])) {
+				sample_area_idx = i;
+				break;
+			}
+		}
 		for (var i = 0; i < raw_data.length; i++) {
 			var data_row = raw_data[i];
 			var validCountInRow = util.xlsxHelper.validCountInRow(data_row);
+			if ((data_row[sample_area_idx] === undefined) || (data_row[sample_area_idx] === null)) data_row[sample_area_idx] = current_sample_area;
+			else current_sample_area = "" + data_row[sample_area_idx];
 			try {
 				var record = ForestRecord.fromRow(headerRow, data_row);
 				if (record instanceof ForestRecord) {
@@ -326,21 +337,30 @@ ForestData.fromDataset = function(dataset) {
 	return data;
 }
 
-ForestData.getTypes = function(data) {
-	var types = {};
-
+ForestData.getTitleType = function(data) {
 	var isRowTitle = false;
+	var avoids = ['冠幅'];
 	for (var i = 0; i < data.length; i++) {
-		if (util.xlsxHelper.validCountInRow(data[i]) === 1) {
+		var valid_count = 0;
+		// if (util.xlsxHelper.validCountInRow(data[i]) === 1) {
+		// 	isRowTitle = true;
+		// 	break;
+		// }
+		for (var j = 0; j < data[i].length; j++) {
+			if (data[i][j] !== undefined) {
+				valid_count++;
+				if (util.arrayHelper.contain(avoids, "" + data[i][j])) {
+					valid_count = 0;
+					break;
+				}
+			}
+		}
+		if (valid_count === 1) {
 			isRowTitle = true;
 			break;
 		}
 	}
-	types.title = isRowTitle ? 'row-title' : 'col-title';
-
-	types.category = "tree";
-
-	return types;
+	return isRowTitle ? 'row-title' : 'col-title';
 }
 
 ForestData.isHeaderRow = function(data_row) {

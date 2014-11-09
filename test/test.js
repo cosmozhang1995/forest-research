@@ -1,7 +1,9 @@
 var forest = require('../index.js');
 
 // var data = forest.loadFile(__dirname + '/test-row-title.xlsx')[0];
-var data = forest.loadFile('/Users/zhangcosmo/Downloads/青冈次生林/乔木原始数据.xlsx');
+var data = forest.loadFile('/Users/zhangcosmo/Downloads/青冈次生林/乔木原始数据.xlsx', {
+	category: 'tree'
+});
 
 // console.log(data);
 // console.log(data.getDetailTable());
@@ -17,9 +19,10 @@ var data = forest.loadFile('/Users/zhangcosmo/Downloads/青冈次生林/乔木�
 var output_data = [];
 for (var i = 0; i < data.length; i++) {
 	output_data.push({ name:data[i].name, data:data[i].getSummaryTable() });
+	// output_data.push({ name:data[i].name, data:data[i].getSampleSpeciesSummaryTable() });
 }
 
-forest.putFile('./test/output.xlsx', output_data);
+forest.putFileSync('./test/output.xlsx', output_data);
 
 module.exports = {
 	data: data

@@ -85,9 +85,13 @@ var ForestUtil = {
 			}
 			return data;
 		},
-		outputData: function(filename, data) {
+		outputData: function(filename, data, callback) {
 			var file_bin = ForestUtil.xlsx.build(data);
-			ForestUtil.file_system.writeFile(filename, file_bin);
+			ForestUtil.file_system.writeFile(filename, file_bin, callback);
+		},
+		outputDataSync: function(filename, data) {
+			var file_bin = ForestUtil.xlsx.build(data);
+			ForestUtil.file_system.writeFileSync(filename, file_bin);
 		}
 	}
 }
