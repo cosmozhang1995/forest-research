@@ -1,7 +1,7 @@
 module.exports = {
-	sampleArea: '^((样地)|(样方))$',
+	sampleArea: '^((样地)|(样方)|(小样))$',
 	species: '^((物种)|(树种))$',
-	count: '^((计数)|(数量)|(数目))$',
+	count: '^((计数)|(数量)|(数目)|(丛数.*))$',
 	diameterBreast: '胸径',
 	areaBreast: '胸高断(面积){0,1}',
 	lengthCrown: '长',

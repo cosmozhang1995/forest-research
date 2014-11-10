@@ -8,6 +8,8 @@ module.exports = {
 	areaBreastTotal: '总胸高断',
 	areaCrown: '冠幅/种',
 	areaCrownTotal: '总冠幅',
+	areaCover: '盖度/种',
+	areaCoverTotal: '总盖度',
 	density: '相对密度',
 	frequence: '相对频度',
 	advantage: '相对优势',

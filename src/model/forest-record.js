@@ -12,7 +12,10 @@ var ForestRecord = function(opts) {
 	};
 	this.areaCrown = function() {
 		return this.lengthCrown * this.widthCrown;
-	}
+	};
+	this.areaCover = function() {
+		return this.lengthCrown * this.widthCrown;
+	};
 
 	this.appendOpts(opts);
 }
@@ -67,6 +70,9 @@ ForestRecord.propertyParsers = {
 		throw "Cannot set this property";
 	},
 	areaCrown: function(data) {
+		throw "Cannot set this property";
+	},
+	areaCover: function(data) {
 		throw "Cannot set this property";
 	}
 }

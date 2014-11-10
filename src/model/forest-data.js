@@ -130,8 +130,12 @@ var ForestData = function(opts) {
 		var records = this.get('records');
 		var data = [];
 		var _this = this;
+		var allSampleAreas = [];
 		records.forEach(function(item){
 			var exist_data = util.arrayHelper.findProperty(data, 'species', item.species);
+			if (!util.arrayHelper.contain(allSampleAreas, item.sampleArea)) {
+				allSampleAreas.push(item.sampleArea);
+			}
 			if (exist_data) {
 				if (!util.arrayHelper.contain(exist_data.sampleAreas, item.sampleArea)) {
 					exist_data.sampleAreas.push(item.sampleArea);
@@ -153,14 +157,16 @@ var ForestData = function(opts) {
 					areaBreast: item.get('areaBreast'),
 					lengthCrown: item.get('lengthCrown'),
 					widthCrown: item.get('widthCrown'),
-					areaCrown: item.get('areaCrown')
+					areaCrown: item.get('areaCrown'),
+					areaCover: item.get('areaCover')
 				});
 			}
 		});
 		var countTotal = 0,
-				sampleAreaCountTotal = 0,
+				sampleAreaCountTotal = allSampleAreas.length,
 				areaBreastTotal = 0,
 				areaCrownTotal = 0,
+				areaCoverTotal = 0,
 				swFigureTotal = 0,
 				sFigure = 0,
 				diversity = 0,
@@ -168,16 +174,27 @@ var ForestData = function(opts) {
 				jsw = 0;
 		data.forEach(function(item) {
 			countTotal += item.count;
-			sampleAreaCountTotal += item.sampleAreaCount;
 			areaBreastTotal += item.areaBreast;
 			areaCrownTotal += item.areaCrown;
+			areaCoverTotal += item.areaCover;
 		});
 		data.forEach(function(item) {
 			item.density = item.count / countTotal;
 			item.frequence = item.sampleAreaCount / sampleAreaCountTotal;
-			item.advantage = (_this.types.category == "tree") ?
-				item.areaBreast / areaBreastTotal :
-				item.areaCrown / areaCrownTotal;
+			// item.advantage = (_this.types.category == "tree") ?
+			// 	item.areaBreast / areaBreastTotal :
+			// 	item.areaCrown / areaCrownTotal;
+			switch (_this.types.category) {
+				case "tree":
+					item.advantage = item.areaBreast / areaBreastTotal;
+					break;
+				case "shrub":
+					item.advantage = item.areaCrown / areaCrownTotal;
+					break;
+				case "herb":
+					item.advantage = item.areaCover / areaCoverTotal;
+					break;
+			}
 			item.importance = (item.density + item.frequence + item.advantage) / 3;
 			item.pi = item.density;
 			item.lnpi = Math.log(item.pi);
@@ -198,6 +215,7 @@ var ForestData = function(opts) {
 			sampleAreaCountTotal: sampleAreaCountTotal,
 			areaBreastTotal: areaBreastTotal,
 			areaCrownTotal: areaCrownTotal,
+			areaCoverTotal: areaCoverTotal,
 			swFigureTotal: swFigureTotal,
 			sFigure: sFigure,
 			diversity: diversity,
@@ -216,6 +234,7 @@ var ForestData = function(opts) {
 			data0.sampleAreaCountTotal = summaryData.sampleAreaCountTotal;
 			data0.areaBreastTotal = summaryData.areaBreastTotal;
 			data0.areaCrownTotal = summaryData.areaCrownTotal;
+			data0.areaCoverTotal = summaryData.areaCoverTotal;
 			data0.swFigureTotal = summaryData.swFigureTotal;
 			data0.sFigure = summaryData.sFigure;
 			data0.diversity = summaryData.diversity;
@@ -250,7 +269,18 @@ var ForestData = function(opts) {
 		return util.xlsxHelper.dataArray(fields, titleMapper, records);
 	};
 	this.getSummaryTable = function(fields, titleMapper) {
-		var areaField = (this.types.category == "tree") ? 'areaBreast' : 'areaCrown';
+		var areaField = "";
+		switch (this.types.category) {
+			case "tree":
+				areaField = "areaBreast";
+				break;
+			case "shrub":
+				areaField = "areaCrown";
+				break;
+			case "herb":
+				areaField = "areaCover";
+				break;
+		}
 		if (!fields) fields = ['species', 'sampleAreaCount', 'sampleAreaCountTotal', 'count', 'countTotal', areaField, areaField+'Total', 'density', 'frequence', 'advantage', 'importance', 'pi', 'lnpi', 'pimlnpi', 'swFigure', 'swFigureTotal', 'pi2', 'sFigure', 'diversity', 'lns', 'jsw'];
 		if (!titleMapper) titleMapper = util.summaryTableTitleMapper;
 		var records = this.getSummaryForTable();
@@ -347,7 +377,7 @@ ForestData.getTitleType = function(data) {
 		// 	break;
 		// }
 		for (var j = 0; j < data[i].length; j++) {
-			if (data[i][j] !== undefined) {
+			if ((data[i][j] !== undefined) && (data[i][j] !== null) && (data[i][j] !== "")) {
 				valid_count++;
 				if (util.arrayHelper.contain(avoids, "" + data[i][j])) {
 					valid_count = 0;
