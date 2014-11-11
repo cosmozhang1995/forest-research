@@ -2,7 +2,8 @@ var forest = require('../index.js');
 
 // var data = forest.loadFile(__dirname + '/test-row-title.xlsx')[0];
 var data = forest.loadFile('/Users/zhangcosmo/Downloads/青冈次生林/草本原始数据.xlsx', {
-	category: 'herb'
+	category: 'herb',
+	singleFeature: false
 });
 
 // console.log(data);

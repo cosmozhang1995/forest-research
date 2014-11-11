@@ -5,11 +5,14 @@ var ForestData = function(opts) {
 	this.types = {
 		title: "row-title",				// row-title | col-title
 		category: "tree"					// tree | shrub | herb
-	};						
+	};
 	this.name = "";
 	if (opts && (opts.records instanceof Array)) this.records = opts.records;
 	else this.records = [];
 	if (opts && opts.category) this.types.category = opts.category;
+
+	this.recordOpts = {};
+	if (opts && opts.singleFeature) this.recordOpts.singleFeature = opts.singleFeature;
 
 	this.getSpeciesSummary = function() {
 		var records = this.get('records');
@@ -22,22 +25,24 @@ var ForestData = function(opts) {
 					exist_data.sampleAreaCount++;
 				}
 				exist_data.count += item.count;
-				exist_data.diameterBreast += item.get('diameterBreast');
-				exist_data.areaBreast += item.get('areaBreast');
-				exist_data.lengthCrown += item.get('lengthCrown');
-				exist_data.widthCrown += item.get('widthCrown');
-				exist_data.areaCrown += item.get('areaCrown');
+				exist_data.diameterBreast += item.get('diameterBreast') * item.get('multipulier');
+				exist_data.areaBreast += item.get('areaBreast') * item.get('multipulier');
+				exist_data.lengthCrown += item.get('lengthCrown') * item.get('multipulier');
+				exist_data.widthCrown += item.get('widthCrown') * item.get('multipulier');
+				exist_data.areaCrown += item.get('areaCrown') * item.get('multipulier');
+				exist_data.areaCover += item.get('areaCover') * item.get('multipulier');
 			} else {
 				data.push({
 					species: item.species,
 					count: item.count,
 					sampleAreas: [item.sampleArea],
 					sampleAreaCount: 1,
-					diameterBreast: item.get('diameterBreast'),
-					areaBreast: item.get('areaBreast'),
-					lengthCrown: item.get('lengthCrown'),
-					widthCrown: item.get('widthCrown'),
-					areaCrown: item.get('areaCrown')
+					diameterBreast: item.get('diameterBreast') * item.get('multipulier'),
+					areaBreast: item.get('areaBreast') * item.get('multipulier'),
+					lengthCrown: item.get('lengthCrown') * item.get('multipulier'),
+					widthCrown: item.get('widthCrown') * item.get('multipulier'),
+					areaCrown: item.get('areaCrown') * item.get('multipulier'),
+					areaCover: item.get('areaCover') * item.get('multipulier')
 				});
 			}
 		});
@@ -62,22 +67,24 @@ var ForestData = function(opts) {
 					exist_data.speciesCount++;
 				}
 				exist_data.count += item.count;
-				exist_data.diameterBreast += item.get('diameterBreast');
-				exist_data.areaBreast += item.get('areaBreast');
-				exist_data.lengthCrown += item.get('lengthCrown');
-				exist_data.widthCrown += item.get('widthCrown');
-				exist_data.areaCrown += item.get('areaCrown');
+				exist_data.diameterBreast += item.get('diameterBreast') * item.get('multipulier');
+				exist_data.areaBreast += item.get('areaBreast') * item.get('multipulier');
+				exist_data.lengthCrown += item.get('lengthCrown') * item.get('multipulier');
+				exist_data.widthCrown += item.get('widthCrown') * item.get('multipulier');
+				exist_data.areaCrown += item.get('areaCrown') * item.get('multipulier');
+				exist_data.areaCover += item.get('areaCover') * item.get('multipulier');
 			} else {
 				data.push({
 					species: [item.species],
 					count: item.count,
 					sampleArea: item.sampleArea,
 					speciesCount: 1,
-					diameterBreast: item.get('diameterBreast'),
-					areaBreast: item.get('areaBreast'),
-					lengthCrown: item.get('lengthCrown'),
-					widthCrown: item.get('widthCrown'),
-					areaCrown: item.get('areaCrown')
+					diameterBreast: item.get('diameterBreast') * item.get('multipulier'),
+					areaBreast: item.get('areaBreast') * item.get('multipulier'),
+					lengthCrown: item.get('lengthCrown') * item.get('multipulier'),
+					widthCrown: item.get('widthCrown') * item.get('multipulier'),
+					areaCrown: item.get('areaCrown') * item.get('multipulier'),
+					areaCover: item.get('areaCover') * item.get('multipulier')
 				});
 			}
 		});
@@ -98,21 +105,23 @@ var ForestData = function(opts) {
 			var exist_data = util.arrayHelper.findProperty(util.arrayHelper.filterProperty(data, 'sampleArea', item.sampleArea), 'species', item.species);
 			if (exist_data) {
 				exist_data.count += item.count;
-				exist_data.diameterBreast += item.get('diameterBreast');
-				exist_data.areaBreast += item.get('areaBreast');
-				exist_data.lengthCrown += item.get('lengthCrown');
-				exist_data.widthCrown += item.get('widthCrown');
-				exist_data.areaCrown += item.get('areaCrown');
+				exist_data.diameterBreast += item.get('diameterBreast') * item.get('multipulier');
+				exist_data.areaBreast += item.get('areaBreast') * item.get('multipulier');
+				exist_data.lengthCrown += item.get('lengthCrown') * item.get('multipulier');
+				exist_data.widthCrown += item.get('widthCrown') * item.get('multipulier');
+				exist_data.areaCrown += item.get('areaCrown') * item.get('multipulier');
+				exist_data.areaCover += item.get('areaCover') * item.get('multipulier');
 			} else {
 				data.push({
 					sampleArea: item.sampleArea,
 					species: item.species,
 					count: item.count,
-					diameterBreast: item.get('diameterBreast'),
-					areaBreast: item.get('areaBreast'),
-					lengthCrown: item.get('lengthCrown'),
-					widthCrown: item.get('widthCrown'),
-					areaCrown: item.get('areaCrown')
+					diameterBreast: item.get('diameterBreast') * item.get('multipulier'),
+					areaBreast: item.get('areaBreast') * item.get('multipulier'),
+					lengthCrown: item.get('lengthCrown') * item.get('multipulier'),
+					widthCrown: item.get('widthCrown') * item.get('multipulier'),
+					areaCrown: item.get('areaCrown') * item.get('multipulier'),
+					areaCover: item.get('areaCover') * item.get('multipulier')
 				});
 			}
 		});
@@ -142,23 +151,24 @@ var ForestData = function(opts) {
 					exist_data.sampleAreaCount++;
 				}
 				exist_data.count += item.count;
-				exist_data.diameterBreast += item.get('diameterBreast');
-				exist_data.areaBreast += item.get('areaBreast');
-				exist_data.lengthCrown += item.get('lengthCrown');
-				exist_data.widthCrown += item.get('widthCrown');
-				exist_data.areaCrown += item.get('areaCrown');
+				exist_data.diameterBreast += item.get('diameterBreast') * item.get('multipulier');
+				exist_data.areaBreast += item.get('areaBreast') * item.get('multipulier');
+				exist_data.lengthCrown += item.get('lengthCrown') * item.get('multipulier');
+				exist_data.widthCrown += item.get('widthCrown') * item.get('multipulier');
+				exist_data.areaCrown += item.get('areaCrown') * item.get('multipulier');
+				exist_data.areaCover += item.get('areaCover') * item.get('multipulier');
 			} else {
 				data.push({
 					species: item.species,
 					count: item.count,
 					sampleAreas: [item.sampleArea],
 					sampleAreaCount: 1,
-					diameterBreast: item.get('diameterBreast'),
-					areaBreast: item.get('areaBreast'),
-					lengthCrown: item.get('lengthCrown'),
-					widthCrown: item.get('widthCrown'),
-					areaCrown: item.get('areaCrown'),
-					areaCover: item.get('areaCover')
+					diameterBreast: item.get('diameterBreast') * item.get('multipulier'),
+					areaBreast: item.get('areaBreast') * item.get('multipulier'),
+					lengthCrown: item.get('lengthCrown') * item.get('multipulier'),
+					widthCrown: item.get('widthCrown') * item.get('multipulier'),
+					areaCrown: item.get('areaCrown') * item.get('multipulier'),
+					areaCover: item.get('areaCover') * item.get('multipulier')
 				});
 			}
 		});
@@ -335,6 +345,7 @@ ForestData.fromDataset = function(dataset, opts) {
 			} else {
 				try {
 					var record = ForestRecord.fromRow(headerRow, data_row);
+					record.appendOpts(data.recordOpts);
 					record.set('sampleArea', current_sample_area);
 					if (record instanceof ForestRecord) {
 						data.records.push(record);
@@ -358,6 +369,7 @@ ForestData.fromDataset = function(dataset, opts) {
 			else current_sample_area = "" + data_row[sample_area_idx];
 			try {
 				var record = ForestRecord.fromRow(headerRow, data_row);
+				record.appendOpts(data.recordOpts);
 				if (record instanceof ForestRecord) {
 					data.records.push(record);
 				}

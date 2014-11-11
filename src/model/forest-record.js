@@ -7,6 +7,7 @@ var ForestRecord = function(opts) {
 	this.diameterBreast = 0.0;
 	this.lengthCrown = 0.0;
 	this.widthCrown = 0.0;
+	this.singleFeature = false;
 	this.areaBreast = function() {
 		return Math.PI * this.diameterBreast * this.diameterBreast / 4;
 	};
@@ -15,6 +16,9 @@ var ForestRecord = function(opts) {
 	};
 	this.areaCover = function() {
 		return this.lengthCrown * this.widthCrown;
+	};
+	this.multipulier = function() {
+		return this.singleFeature ? this.count : 1;
 	};
 
 	this.appendOpts(opts);
@@ -73,6 +77,9 @@ ForestRecord.propertyParsers = {
 		throw "Cannot set this property";
 	},
 	areaCover: function(data) {
+		throw "Cannot set this property";
+	},
+	multipulier: function(data) {
 		throw "Cannot set this property";
 	}
 }
