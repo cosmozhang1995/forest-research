@@ -1,6 +1,6 @@
 {
 	"name": "forest-research",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "给亲爱的宝贝设计的实验数据专门处理工具",
 	"main": "index.js",
 	"scripts": {

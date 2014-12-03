@@ -173,7 +173,7 @@ var ForestData = function(opts) {
 			}
 		});
 		var countTotal = 0,
-				sampleAreaCountTotal = allSampleAreas.length,
+				sampleAreaCountTotal = 0,
 				areaBreastTotal = 0,
 				areaCrownTotal = 0,
 				areaCoverTotal = 0,
@@ -184,6 +184,7 @@ var ForestData = function(opts) {
 				jsw = 0;
 		data.forEach(function(item) {
 			countTotal += item.count;
+			sampleAreaCountTotal += item.sampleAreaCount;
 			areaBreastTotal += item.areaBreast;
 			areaCrownTotal += item.areaCrown;
 			areaCoverTotal += item.areaCover;
